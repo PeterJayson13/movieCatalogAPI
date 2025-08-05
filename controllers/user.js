@@ -61,3 +61,22 @@ module.exports.loginUser = async (req, res) => {
     errorHandler(error, req, res);
   }
 };
+
+
+module.exports.getUserDetails = (req, res) => {
+  const userId = req.user.id;
+
+  User.findById(userId)
+    .select("-password") 
+    .then(user => {
+      if (!user) {
+        return res.status(404).send({ error: "User not found" });
+      }
+      res.status(200).send(user);
+    })
+    .catch(err => {
+      console.error("Error fetching user details:", err);
+      res.status(500).send({ error: "Server error" });
+    });
+};
+
