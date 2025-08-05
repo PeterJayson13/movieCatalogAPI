@@ -121,35 +121,36 @@ module.exports.getAllMovies = (req, res) => {
 };
 
 module.exports.getMovieById = (req, res) => {
+  const movieId = req.params.id;
 
-	const movieId = req.params.id;
-
-	Movie.findById(movieId)
-	.then(movie => {
-		if (!movie) {
-			return res.status(404).send({ error: 'Movie not found' });
-		}
-		return res.status(200).send({ movie });
-	})
-	.catch(err => {
-		console.error("Error finding movies: ", err)
-		return res.status(500).send({ error: 'Error finding movies.' });
-	});
+  Movie.findById(movieId)
+    .populate('comments.userId', 'email') 
+    .then(movie => {
+      if (!movie) {
+        return res.status(404).send({ error: 'Movie not found' });
+      }
+      return res.status(200).send(movie); 
+    })
+    .catch(err => {
+      console.error("Error finding movies: ", err);
+      return res.status(500).send({ error: 'Error finding movies.' });
+    });
 };
 
 module.exports.getMovieComments = (req, res) => {
-	const movieId = req.params.id;
+  const movieId = req.params.id;
 
-	Movie.findById(movieId)
-		.then(movie => {
-			if (!movie) {
-				return res.status(404).send({ error: "Movie not found" });
-			}
-			return res.status(200).send({ comments: movie.comments });
-		})
-		.catch(err => {
-			console.error("Error finding movie:", err);
-			return res.status(500).send({ error: "Error finding movie." });
-		});
+  Movie.findById(movieId)
+    .populate('comments.userId', 'email')
+    .then(movie => {
+      if (!movie) {
+        return res.status(404).send({ error: "Movie not found" });
+      }
+      return res.status(200).send({ comments: movie.comments });
+    })
+    .catch(err => {
+      console.error("Error finding movie:", err);
+      return res.status(500).send({ error: "Error finding movie." });
+    });
 };
 
